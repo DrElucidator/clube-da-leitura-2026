@@ -37,13 +37,13 @@ public class TelaCaixa
 
         repositorioCaixa.Cadastrar(novaCaixa);
 
-        Console.WriteLine($"O registro \"{novaCaixa}\" foi cadastrado.");
+        Console.WriteLine($"O registro \"{novaCaixa.Etiqueta}\" foi cadastrado.");
         Console.WriteLine("Pressione ENTER para continuar...");
         Console.ReadKey();
     }
     public void Editar()
     {
-
+        
     }
 
     public void Excluir()
@@ -51,9 +51,35 @@ public class TelaCaixa
 
     }
 
-    public void VisualizarTodas()
+    public void VisualizarTodas(bool deveExibirCabecalho)
     {
-        
+        if (deveExibirCabecalho)
+            ExibirCabecalho("Vizualização de Caixas");
+
+        Console.WriteLine(
+            "{0, 7} | {1, -20} | {2, -10} | {3, -20}",
+            "Id", "Etiqueta", "Cor", "Tempo de Empréstimo"
+        );
+
+        List<Caixa> caixas = repositorioCaixa.SelecionarTodas();
+
+        if (caixas.Count == 0)
+        {
+            Console.WriteLine("Nenhuma caixa cadastrada.");
+        }
+        else
+            foreach (Caixa c in caixas)
+            {
+                Console.WriteLine(
+            "{0, 7} | {1, -20} | {2, -10} | {3, -20}",
+            c.Id, c.Etiqueta, c.Cor, c.DiasDeEmprestimo
+                );
+            }
+            if (deveExibirCabecalho)
+        {
+            Console.WriteLine("\nPressione ENTER para continuar...");
+            Console.ReadKey();
+        }
     }
     private Caixa ObterDadosCadastrais()
     {

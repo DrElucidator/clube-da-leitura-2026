@@ -1,5 +1,6 @@
 
 using System.Net;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using ClubeDaLeitura.ConsoleApp.Dominio;
 namespace ClubeDaLeitura.ConsoleApp.Infraestrutura;
@@ -13,17 +14,16 @@ public class RepositorioCaixa
         caixas.Add(caixa);
     }
 
+    public List<Caixa> SelecionarTodas()
+    {
+        return caixas;
+    }
     public void Editar()
     {
 
     }
 
     public void Excluir()
-    {
-        
-    }
-
-    public void VisualizarTodas()
     {
         
     }
