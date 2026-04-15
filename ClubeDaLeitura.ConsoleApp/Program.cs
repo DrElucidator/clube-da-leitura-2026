@@ -38,8 +38,10 @@ while (true)
             opcaoMenuInterno = telaCaixa.ObterOpcaoMenu();
 
             if (opcaoMenuInterno == "S")
+            {
                 Console.Clear();
                 break;
+            }
             if (opcaoMenuInterno == "1")
                 telaCaixa.Cadastrar();
             else if (opcaoMenuInterno == "2")
