@@ -25,9 +25,9 @@ public class TelaCaixa
         Console.WriteLine("S - Voltar");
         Console.WriteLine("---------------------------------");
         Console.Write("> ");
-        string? opcaoMenuPrincipal = Console.ReadLine()?.ToUpper();
+        string? opcaoMenu = Console.ReadLine()?.ToUpper();
 
-        return opcaoMenuPrincipal;
+        return opcaoMenu;
     }
 
     public void Cadastrar()
