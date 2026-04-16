@@ -23,8 +23,14 @@ public class RepositorioCaixa
 
     }
 
-    public void Excluir()
+    public void Excluir(string id)
     {
-        
+        Caixa excluirCaixa = caixas.Find(cx => cx.Id == id);
+        if (excluirCaixa != null)
+            caixas.Remove(excluirCaixa); 
+    }
+    public Caixa? BuscarPorId(string id)
+    {
+        return caixas.Find(cx => cx.Id == id);
     }
 }

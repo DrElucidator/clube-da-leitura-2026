@@ -43,12 +43,51 @@ public class TelaCaixa
     }
     public void Editar()
     {
-        
+
     }
 
     public void Excluir()
     {
+        ExibirCabecalho("Exclusão de Caixa");
 
+        Console.WriteLine(
+            "{0, 7} | {1, -20} | {2, -10} | {3, -20}",
+            "Id", "Etiqueta", "Cor", "Tempo de Empréstimo"
+        );
+
+        List<Caixa> caixas = repositorioCaixa.SelecionarTodas();
+
+        if (caixas.Count == 0)
+        {
+            Console.WriteLine("Nenhuma caixa cadastrada.");
+        }
+        else
+            foreach (Caixa c in caixas)
+            {
+                Console.WriteLine(
+            "{0, 7} | {1, -20} | {2, -10} | {3, -20}",
+            c.Id, c.Etiqueta, c.Cor, c.DiasDeEmprestimo
+                );
+            }
+
+        Console.WriteLine("Digite o id da caixa para exclusão: ");
+        string id = Console.ReadLine();
+
+        Caixa caixaDeletada = repositorioCaixa.BuscarPorId(id);
+
+        if (caixaDeletada == null)
+            Console.WriteLine("Caixa não encontrada.");
+        else
+            if (caixaDeletada.Revistas.Count == 0)
+            {
+                repositorioCaixa.Excluir(id);
+                Console.WriteLine($"O registro \"{caixaDeletada.Etiqueta}\" foi excluido.");
+            }
+            else
+                Console.WriteLine($"Não é possível excluir uma caixa que contenha revistas.");
+
+        Console.WriteLine("Pressione ENTER para continuar...");
+        Console.ReadKey();
     }
 
     public void VisualizarTodas(bool deveExibirCabecalho)
@@ -75,7 +114,7 @@ public class TelaCaixa
             c.Id, c.Etiqueta, c.Cor, c.DiasDeEmprestimo
                 );
             }
-            if (deveExibirCabecalho)
+        if (deveExibirCabecalho)
         {
             Console.WriteLine("\nPressione ENTER para continuar...");
             Console.ReadKey();
