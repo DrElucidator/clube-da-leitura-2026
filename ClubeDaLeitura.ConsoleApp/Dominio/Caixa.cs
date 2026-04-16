@@ -13,8 +13,8 @@ public class Caixa
     {
         Id = Convert
             .ToHexString(RandomNumberGenerator.GetBytes(20))
-            .ToLower()
-            .Substring(0, 7);
+            .ToUpper()
+            .Substring(0, 5);
 
         Etiqueta = etiqueta;
         Cor = cor;

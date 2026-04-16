@@ -2,6 +2,7 @@ using System.Security.Cryptography.X509Certificates;
 using ClubeDaLeitura.ConsoleApp.Infraestrutura;
 using ClubeDaLeitura.ConsoleApp.Dominio;
 using System.Net;
+using System.Data.Common;
 namespace ClubeDaLeitura.ConsoleApp.Apresentacao;
 
 public class TelaCaixa
@@ -35,11 +36,15 @@ public class TelaCaixa
 
         Caixa novaCaixa = ObterDadosCadastrais();
 
-        repositorioCaixa.Cadastrar(novaCaixa);
-
-        Console.WriteLine($"O registro \"{novaCaixa.Etiqueta}\" foi cadastrado.");
-        Console.WriteLine("Pressione ENTER para continuar...");
-        Console.ReadKey();
+        if (novaCaixa == null)
+        {
+            ExibirMensagem("Cadastro cancelado.");
+        }
+        else
+        {
+            repositorioCaixa.Cadastrar(novaCaixa);
+            ExibirMensagem($"O registro \"{novaCaixa.Etiqueta}\" foi cadastrado.");
+        }
     }
     public void Editar()
     {
@@ -67,10 +72,10 @@ public class TelaCaixa
             }
         }
 
-        Console.WriteLine("Digite o id da caixa para edição: ");
-        string id = Console.ReadLine();
+        Console.WriteLine("\nDigite o id da caixa para edição: ");
+        string? id = Console.ReadLine().ToUpper();
 
-        Caixa caixaEditada = repositorioCaixa.BuscarPorId(id);
+        Caixa? caixaEditada = repositorioCaixa.BuscarPorId(id);
 
         if (caixaEditada == null)
             Console.WriteLine("Caixa não encontrada.");
@@ -79,15 +84,16 @@ public class TelaCaixa
             Console.WriteLine($"Caixa \"{caixaEditada.Etiqueta}\" foi selecionada para edição");
 
             Console.Write("Digite a nova etiqueta ou deixe em branco para manter a mesma: ");
-            string novaEtiqueta = Console.ReadLine();
+            string? novaEtiqueta = Console.ReadLine();
             if (!string.IsNullOrWhiteSpace(novaEtiqueta))
             {
                 caixaEditada.Etiqueta = novaEtiqueta;
             }
 
-            Console.Write("Selecione uma nova cor ou deixe em branco para manter a mesma: ");
-            string novaCor = Console.ReadLine();
-            if (!string.IsNullOrWhiteSpace(novaCor)) ;
+            Console.Write("Deseja modificar a cor da caixa? [S/N]");
+            string? novaCor = Console.ReadLine()?.ToUpper();
+
+            if (!string.IsNullOrWhiteSpace(novaCor) && novaCor == "S")
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("1 = Vermelho");
@@ -98,7 +104,7 @@ public class TelaCaixa
                 Console.ResetColor();
                 Console.WriteLine("4 = Branco\n");
 
-                string codigoCor = Console.ReadLine();
+                string? codigoCor = Console.ReadLine();
                 string cor;
 
                 if (codigoCor == "1")
@@ -112,17 +118,23 @@ public class TelaCaixa
             }
 
             Console.Write("Digite o novo tempo de empréstimo: ");
-            string novaDiasDeEmprestimo = Console.ReadLine();
-            if (!string.IsNullOrWhiteSpace(novaDiasDeEmprestimo) && int.TryParse(novaDiasDeEmprestimo, out int novosDias))
+            string valorDiasDeEmprestimo = Console.ReadLine();
+
+            int novaDiasDeEmprestimo;
+
+            if (string.IsNullOrWhiteSpace(valorDiasDeEmprestimo))
             {
-                caixaEditada.DiasDeEmprestimo = novosDias;
+                novaDiasDeEmprestimo = 7;
             }
+            else if (!int.TryParse(valorDiasDeEmprestimo, out novaDiasDeEmprestimo))
+            {
+                Console.WriteLine("\nValor inválido, portanto valor padrão de 7 dias atribuído.\n");
+                novaDiasDeEmprestimo = 7;
+            }
+            caixaEditada.DiasDeEmprestimo = novaDiasDeEmprestimo;
 
-            Console.WriteLine($"Caixa \"{caixaEditada.Etiqueta}\" foi editada com sucesso.");
+            ExibirMensagem($"Caixa \"{caixaEditada.Id}\" foi editada com sucesso.");
         }
-
-        Console.WriteLine("Pressione ENTER para continuar...");
-        Console.ReadKey();
     }
 
     public void Excluir()
@@ -150,10 +162,10 @@ public class TelaCaixa
                 );
             }
         }
-        Console.WriteLine("Digite o id da caixa para exclusão: ");
-        string id = Console.ReadLine();
+        Console.WriteLine("\nDigite o id da caixa para exclusão: ");
+        string? id = Console.ReadLine().ToUpper();
 
-        Caixa caixaDeletada = repositorioCaixa.BuscarPorId(id);
+        Caixa? caixaDeletada = repositorioCaixa.BuscarPorId(id);
 
         if (caixaDeletada == null)
             Console.WriteLine("Caixa não encontrada.");
@@ -161,13 +173,10 @@ public class TelaCaixa
             if (caixaDeletada.Revistas.Count == 0)
             {
                 repositorioCaixa.Excluir(id);
-                Console.WriteLine($"O registro \"{caixaDeletada.Etiqueta}\" foi excluido.");
+                ExibirMensagem($"O registro \"{caixaDeletada.Etiqueta}\" foi excluido.");
             }
             else
-                Console.WriteLine($"Não é possível excluir uma caixa que contenha revistas.");
-
-        Console.WriteLine("Pressione ENTER para continuar...");
-        Console.ReadKey();
+                ExibirMensagem("Não é possível excluir uma caixa que contenha revistas.");
     }
 
     public void VisualizarTodas(bool deveExibirCabecalho)
@@ -184,7 +193,7 @@ public class TelaCaixa
 
         if (caixas.Count == 0)
         {
-            Console.WriteLine("Nenhuma caixa cadastrada.");
+            Console.WriteLine("\nNenhuma caixa cadastrada.");
         }
         else
             foreach (Caixa c in caixas)
@@ -196,14 +205,18 @@ public class TelaCaixa
             }
         if (deveExibirCabecalho)
         {
-            Console.WriteLine("\nPressione ENTER para continuar...");
-            Console.ReadKey();
+            ExibirMensagem("");
         }
     }
     private Caixa ObterDadosCadastrais()
     {
         Console.WriteLine("Digite a etiqueta da caixa: ");
-        string? etiqueta = Console.ReadLine();
+        string etiqueta = Console.ReadLine();
+        if (string.IsNullOrWhiteSpace(etiqueta) || etiqueta.Length > 50)
+        {
+            Console.WriteLine("Nome da caixa inválido, digite um nome válido de até 50 caracteres.");
+            return null;
+        }
 
         Console.WriteLine("\nSelecione uma das cores");
         Console.ForegroundColor = ConsoleColor.Red;
@@ -215,7 +228,7 @@ public class TelaCaixa
         Console.ResetColor();
         Console.WriteLine("4 = Branco\n");
 
-        string codigoCor = Console.ReadLine();
+        string? codigoCor = Console.ReadLine();
         string cor;
 
         if (codigoCor == "1")
@@ -228,7 +241,19 @@ public class TelaCaixa
             cor = "Branco";
 
         Console.WriteLine("informe o tempo de empréstimo das revistas desta caixa: ");
-        int diasDeEmprestimo = Convert.ToInt32(Console.ReadLine());
+        string quantidadeDiasDeEmprestimo = Console.ReadLine();
+
+        int diasDeEmprestimo;
+
+        if (string.IsNullOrWhiteSpace(quantidadeDiasDeEmprestimo))
+        {
+            diasDeEmprestimo = 7;
+        }
+        else if (!int.TryParse(quantidadeDiasDeEmprestimo, out diasDeEmprestimo))
+        {
+            Console.WriteLine("\nValor inválido, portanto valor padrão de 7 dias atribuído.\n");
+            diasDeEmprestimo = 7;
+        }
 
         Caixa novaCaixa = new Caixa(etiqueta, cor, diasDeEmprestimo);
 
