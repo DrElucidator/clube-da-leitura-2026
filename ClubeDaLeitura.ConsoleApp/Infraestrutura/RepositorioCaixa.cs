@@ -2,6 +2,7 @@
 using System.Net;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
+using ClubeDaLeitura.ConsoleApp.Apresentacao;
 using ClubeDaLeitura.ConsoleApp.Dominio;
 namespace ClubeDaLeitura.ConsoleApp.Infraestrutura;
 

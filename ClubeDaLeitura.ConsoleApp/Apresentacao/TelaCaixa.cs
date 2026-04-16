@@ -43,7 +43,86 @@ public class TelaCaixa
     }
     public void Editar()
     {
+        ExibirCabecalho("Edição de Caixa");
 
+        Console.WriteLine(
+            "{0, 7} | {1, -20} | {2, -10} | {3, -20}",
+            "Id", "Etiqueta", "Cor", "Tempo de Empréstimo"
+        );
+
+        List<Caixa> caixas = repositorioCaixa.SelecionarTodas();
+
+        if (caixas.Count == 0)
+        {
+            Console.WriteLine("Nenhuma caixa cadastrada.");
+        }
+        else
+        {
+            foreach (Caixa c in caixas)
+            {
+                Console.WriteLine(
+            "{0, 7} | {1, -20} | {2, -10} | {3, -20}",
+            c.Id, c.Etiqueta, c.Cor, c.DiasDeEmprestimo
+                );
+            }
+        }
+
+        Console.WriteLine("Digite o id da caixa para edição: ");
+        string id = Console.ReadLine();
+
+        Caixa caixaEditada = repositorioCaixa.BuscarPorId(id);
+
+        if (caixaEditada == null)
+            Console.WriteLine("Caixa não encontrada.");
+        else
+        {
+            Console.WriteLine($"Caixa \"{caixaEditada.Etiqueta}\" foi selecionada para edição");
+
+            Console.Write("Digite a nova etiqueta ou deixe em branco para manter a mesma: ");
+            string novaEtiqueta = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(novaEtiqueta))
+            {
+                caixaEditada.Etiqueta = novaEtiqueta;
+            }
+
+            Console.Write("Selecione uma nova cor ou deixe em branco para manter a mesma: ");
+            string novaCor = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(novaCor)) ;
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("1 = Vermelho");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("2 = Verde");
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine("3 = Azul");
+                Console.ResetColor();
+                Console.WriteLine("4 = Branco\n");
+
+                string codigoCor = Console.ReadLine();
+                string cor;
+
+                if (codigoCor == "1")
+                    cor = "Vermelho";
+                else if (codigoCor == "2")
+                    cor = "Verde";
+                else if (codigoCor == "3")
+                    cor = "Azul";
+                else
+                    cor = "Branco";
+            }
+
+            Console.Write("Digite o novo tempo de empréstimo: ");
+            string novaDiasDeEmprestimo = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(novaDiasDeEmprestimo) && int.TryParse(novaDiasDeEmprestimo, out int novosDias))
+            {
+                caixaEditada.DiasDeEmprestimo = novosDias;
+            }
+
+            Console.WriteLine($"Caixa \"{caixaEditada.Etiqueta}\" foi editada com sucesso.");
+        }
+
+        Console.WriteLine("Pressione ENTER para continuar...");
+        Console.ReadKey();
     }
 
     public void Excluir()
@@ -62,6 +141,7 @@ public class TelaCaixa
             Console.WriteLine("Nenhuma caixa cadastrada.");
         }
         else
+        {
             foreach (Caixa c in caixas)
             {
                 Console.WriteLine(
@@ -69,7 +149,7 @@ public class TelaCaixa
             c.Id, c.Etiqueta, c.Cor, c.DiasDeEmprestimo
                 );
             }
-
+        }
         Console.WriteLine("Digite o id da caixa para exclusão: ");
         string id = Console.ReadLine();
 
@@ -135,19 +215,19 @@ public class TelaCaixa
         Console.ResetColor();
         Console.WriteLine("4 = Branco\n");
 
-        char codigoCor = Convert.ToChar(Console.ReadLine());
+        string codigoCor = Console.ReadLine();
         string cor;
 
-        if (codigoCor == 1)
+        if (codigoCor == "1")
             cor = "Vermelho";
-        else if (codigoCor == 2)
+        else if (codigoCor == "2")
             cor = "Verde";
-        else if (codigoCor == 3)
+        else if (codigoCor == "3")
             cor = "Azul";
         else
             cor = "Branco";
 
-        System.Console.WriteLine("informe o tempo de empréstimo das revistas desta caixa: ");
+        Console.WriteLine("informe o tempo de empréstimo das revistas desta caixa: ");
         int diasDeEmprestimo = Convert.ToInt32(Console.ReadLine());
 
         Caixa novaCaixa = new Caixa(etiqueta, cor, diasDeEmprestimo);
