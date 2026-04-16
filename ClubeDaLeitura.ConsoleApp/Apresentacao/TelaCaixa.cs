@@ -154,11 +154,11 @@ public class TelaCaixa
         }
         else
         {
-            foreach (Caixa c in caixas)
+            foreach (Caixa cx in caixas)
             {
                 Console.WriteLine(
             "{0, 7} | {1, -20} | {2, -10} | {3, -20}",
-            c.Id, c.Etiqueta, c.Cor, c.DiasDeEmprestimo
+            cx.Id, cx.Etiqueta, cx.Cor, cx.DiasDeEmprestimo
                 );
             }
         }
@@ -210,7 +210,7 @@ public class TelaCaixa
     }
     private Caixa ObterDadosCadastrais()
     {
-        Console.WriteLine("Digite a etiqueta da caixa: ");
+        ExibirCabecalho("Digite a etiqueta da caixa: ");
         string etiqueta = Console.ReadLine();
         if (string.IsNullOrWhiteSpace(etiqueta) || etiqueta.Length > 50)
         {

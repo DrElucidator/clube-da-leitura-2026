@@ -6,7 +6,7 @@ RepositorioCaixa repositorioCaixa = new RepositorioCaixa();
 TelaCaixa telaCaixa = new TelaCaixa(repositorioCaixa);
 
 RepositorioRevista repositorioRevista = new RepositorioRevista();
-TelaRevista telaRevista = new TelaRevista(repositorioRevista);
+TelaRevista telaRevista = new TelaRevista(repositorioRevista, repositorioCaixa);
 
 Caixa caixa = new Caixa("Lançamentos", "Vermelho", 3);
 repositorioCaixa.Cadastrar(caixa);
