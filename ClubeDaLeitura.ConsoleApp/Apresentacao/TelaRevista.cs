@@ -50,7 +50,63 @@ public class TelaRevista
 
     public void Editar()
     {
+        ExibirCabecalho("Edição de Revista");
 
+        Console.WriteLine(
+            "{0, -7} | {1, -25} | {2, -6} | {3, -4} | {4, -15}",
+            "Id", "Título", "Edição", "Ano", "Caixa"
+        );
+
+        List<Revista> revistas = repositorioRevista.SelecionarTodas();
+
+        if (revistas.Count == 0)
+        {
+            Console.WriteLine("Nenhuma revista cadastrada.");
+        }
+        else
+        {
+            foreach (Revista revst in revistas)
+            {
+                Console.Write("{0, -7} | ", revst.Id);
+                Console.Write("{0, -25} | ", revst.Titulo);
+                Console.Write("{0, -6} | ", revst.NumeroEdicao);
+                Console.Write("{0, -4} | ", revst.AnoPublicacao);
+
+                string corSelecionada = revst.Caixa.Cor;
+
+                if (corSelecionada == "Vermelho")
+                    Console.ForegroundColor = ConsoleColor.Red;
+
+                else if (corSelecionada == "Verde")
+                    Console.ForegroundColor = ConsoleColor.Green;
+
+                else if (corSelecionada == "Azul")
+                    Console.ForegroundColor = ConsoleColor.Blue;
+
+                Console.Write("{0, -15}", revst.Caixa.Etiqueta);
+
+                Console.ResetColor();
+            }
+
+            Console.WriteLine("\nDigite o id da revista para edição: ");
+            string? id = Console.ReadLine().ToUpper();
+
+            Revista? revistaEditada = repositorioRevista.BuscarPorId(id);
+
+            if (revistaEditada == null)
+                Console.WriteLine("Revista não encontrada.");
+            else
+            {
+                Console.WriteLine($"Revista \"{revistaEditada.Titulo}\" foi selecionada para edição");
+
+                Console.Write("Digite o novo titulo ou deixe em branco para manter o mesmo: ");
+                string? novoTitulo = Console.ReadLine();
+                if (!string.IsNullOrWhiteSpace(novoTitulo))
+                {
+                    revistaEditada.Titulo = novoTitulo;
+                }
+            }
+        }
     }
 
     public void Excluir()
