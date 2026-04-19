@@ -1,255 +1,132 @@
-using System.Security.Cryptography.X509Certificates;
-using ClubeDaLeitura.ConsoleApp.Infraestrutura;
 using ClubeDaLeitura.ConsoleApp.Dominio;
-using System.Net;
-using System.Data.Common;
+using ClubeDaLeitura.ConsoleApp.Infraestrutura;
 namespace ClubeDaLeitura.ConsoleApp.Apresentacao;
 
-public class TelaCaixa
-{
-    public RepositorioCaixa repositorioCaixa;
-    public TelaCaixa(RepositorioCaixa rC)
+    public class TelaCaixa : TelaBase<Caixa>
     {
-        repositorioCaixa = rC;
-    }
-    public string? ObterOpcaoMenu()
-    {
-        Console.Clear();
-        Console.WriteLine("---------------------------------");
-        Console.WriteLine("Gestão de Caixas");
-        Console.WriteLine("---------------------------------");
-        Console.WriteLine("1 - Cadastrar Caixa");
-        Console.WriteLine("2 - Editar Caixa");
-        Console.WriteLine("3 - Excluir Caixa");
-        Console.WriteLine("4 - Visualizar Caixas");
-        Console.WriteLine("S - Voltar");
-        Console.WriteLine("---------------------------------");
-        Console.Write("> ");
-        string? opcaoMenu = Console.ReadLine()?.ToUpper();
+        public override string NomeGestao => "Caixas";
+        private readonly RepositorioCaixa repositorioCaixa;
 
-        return opcaoMenu;
-    }
-
-    public void Cadastrar()
-    {
-        ExibirCabecalho("Cadastro de Caixa");
-
-        Caixa novaCaixa = ObterDadosCadastrais();
-
-        if (novaCaixa == null)
+        public TelaCaixa(RepositorioCaixa rC)
         {
-            ExibirMensagem("Cadastro cancelado.");
+            repositorioCaixa = rC;
         }
-        else
+
+        public override void Cadastrar()
         {
-            repositorioCaixa.Cadastrar(novaCaixa);
-            ExibirMensagem($"O registro \"{novaCaixa.Etiqueta}\" foi cadastrado.");
-        }
-    }
-    public void Editar()
-    {
-        ExibirCabecalho("Edição de Caixa");
-
-        VisualizarTodas(false);
-
-        Console.WriteLine("\nDigite o id da caixa para edição: ");
-        string? id = Console.ReadLine().ToUpper();
-
-        Caixa? caixaEditada = repositorioCaixa.BuscarPorId(id);
-
-        if (string.IsNullOrWhiteSpace(id))
-        {
-            Console.WriteLine("Caixa não encontrada.");
-        }
-        else
-        {
-            Console.WriteLine($"Caixa \"{caixaEditada.Etiqueta}\" foi selecionada para edição\n");
-
-            Console.Write("Digite a nova etiqueta ou deixe em branco para manter a mesma: ");
-            string? novaEtiqueta = Console.ReadLine();
-            if (!string.IsNullOrWhiteSpace(novaEtiqueta))
+            ExibirCabecalho("Cadastro de Caixa", NomeGestao);
+            Caixa novaCaixa = ObterDadosCadastrais();
+            if (novaCaixa == null)
+                ExibirMensagem("Cadastro cancelado.");
+            else
             {
-                caixaEditada.Etiqueta = novaEtiqueta;
+                repositorioCaixa.Cadastrar(novaCaixa);
+                ExibirMensagem($"O registro \"{novaCaixa.Etiqueta}\" foi cadastrado.");
             }
-
-            Console.Write("Deseja modificar a cor da caixa? [S/N]");
-            string? novaCor = Console.ReadLine()?.ToUpper();
-
-            if (!string.IsNullOrWhiteSpace(novaCor) && novaCor == "S")
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("1 = Vermelho");
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("2 = Verde");
-                Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine("3 = Azul");
-                Console.ResetColor();
-                Console.WriteLine("4 = Branco\n");
-
-                string? codigoCor = Console.ReadLine();
-                string cor;
-
-                if (codigoCor == "1")
-                    cor = "Vermelho";
-                else if (codigoCor == "2")
-                    cor = "Verde";
-                else if (codigoCor == "3")
-                    cor = "Azul";
-                else
-                    cor = "Branco";
-            }
-
-            Console.Write("Digite o novo tempo de empréstimo: ");
-            string valorDiasDeEmprestimo = Console.ReadLine();
-
-            int novaDiasDeEmprestimo;
-
-            if (string.IsNullOrWhiteSpace(valorDiasDeEmprestimo))
-            {
-                novaDiasDeEmprestimo = 7;
-            }
-            else if (!int.TryParse(valorDiasDeEmprestimo, out novaDiasDeEmprestimo))
-            {
-                Console.WriteLine("\nValor inválido, portanto valor padrão de 7 dias atribuído.\n");
-                novaDiasDeEmprestimo = 7;
-            }
-            caixaEditada.DiasDeEmprestimo = novaDiasDeEmprestimo;
-
-            ExibirMensagem($"Caixa \"{caixaEditada.Id}\" foi editada com sucesso.");
         }
-    }
 
-    public void Excluir()
-    {
-        ExibirCabecalho("Exclusão de Caixa");
-
-        VisualizarTodas(false);
-
-        Console.WriteLine("\nDigite o id da caixa para exclusão: ");
-        string? id = Console.ReadLine().ToUpper();
-
-        Caixa? caixaDeletada = repositorioCaixa.BuscarPorId(id);
-
-        if (caixaDeletada == null)
+        public override void Editar()
         {
-            ExibirMensagem("Caixa não encontrada.");
-            return;
-        }
+            ExibirCabecalho("Edição de Caixa", NomeGestao);
+            VisualizarTodas(false);
 
-        bool conseguiuExcluir = repositorioCaixa.Excluir(id);
+            Console.WriteLine("\nDigite o id da caixa para edição: ");
+            string? id = Console.ReadLine()?.ToUpper();
+            Caixa? caixaEditada = repositorioCaixa.BuscarPorId(id);
 
-        if (conseguiuExcluir)
-            ExibirMensagem($"O registro \"{caixaDeletada.Etiqueta}\" foi excluido.");
-        else
-            ExibirMensagem("Falha na operação: Caixa não encontrada ou contém revistas.");
-    }
-
-    public void VisualizarTodas(bool deveExibirCabecalho)
-    {
-        if (deveExibirCabecalho)
-            ExibirCabecalho("Vizualização de Caixas");
-
-        Console.WriteLine(
-          "{0, -7} | {1, -20} | {2, -10} | {3, -20}",
-          "Id", "Etiqueta", "Cor", "Tempo de Empréstimo"
-      );
-
-        List<Caixa> caixas = repositorioCaixa.SelecionarTodas();
-
-        if (caixas.Count == 0)
-        {
-            Console.WriteLine("\nNenhuma caixa cadastrada.");
-        }
-        else
-            foreach (Caixa cx in caixas)
+            if (caixaEditada == null)
+                ExibirMensagem("Caixa não encontrada.");
+            else
             {
-                string corSelecionada = cx.Cor;
+                Console.Write("Nova etiqueta: ");
+                string? novaEtiqueta = Console.ReadLine();
+                if (!string.IsNullOrWhiteSpace(novaEtiqueta))
+                    caixaEditada.Etiqueta = novaEtiqueta;
 
-                if (corSelecionada == "Vermelho")
-                    Console.ForegroundColor = ConsoleColor.Red;
-                else if (corSelecionada == "Verde")
-                    Console.ForegroundColor = ConsoleColor.Green;
-                else if (corSelecionada == "Azul")
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                else
+                Console.Write("Novo tempo de empréstimo: ");
+                if (int.TryParse(Console.ReadLine(), out int dias))
+                    caixaEditada.DiasDeEmprestimo = dias;
+
+                ExibirMensagem($"Caixa \"{caixaEditada.Id}\" editada com sucesso.");
+            }
+        }
+
+        public override void Excluir()
+        {
+            ExibirCabecalho("Exclusão de Caixa", NomeGestao);
+            VisualizarTodas(false);
+
+            Console.WriteLine("\nDigite o id da caixa para exclusão: ");
+            string? id = Console.ReadLine()?.ToUpper();
+            Caixa? caixaDeletada = repositorioCaixa.BuscarPorId(id);
+
+            if (caixaDeletada == null)
+                ExibirMensagem("Caixa não encontrada.");
+            else if (repositorioCaixa.Excluir(id))
+                ExibirMensagem($"O registro \"{caixaDeletada.Etiqueta}\" foi excluído.");
+            else
+                ExibirMensagem("Falha ao excluir: Caixa contém revistas.");
+        }
+
+        public override void VisualizarTodas(bool deveExibirCabecalho)
+        {
+            if (deveExibirCabecalho)
+                ExibirCabecalho("Visualização de Caixas", NomeGestao);
+
+            Console.WriteLine("{0, -7} | {1, -20} | {2, -10} | {3, -20}", "Id", "Etiqueta", "Cor", "Dias");
+            var caixas = repositorioCaixa.SelecionarTodas();
+
+            if (caixas.Count == 0)
+                Console.WriteLine("Nenhuma caixa cadastrada.");
+            else
+                foreach (var cx in caixas)
+                {
+                    if (cx.Cor == "Vermelho") Console.ForegroundColor = ConsoleColor.Red;
+                    else if (cx.Cor == "Verde") Console.ForegroundColor = ConsoleColor.Green;
+                    else if (cx.Cor == "Azul") Console.ForegroundColor = ConsoleColor.Blue;
+                    else Console.ResetColor();
+
+                    Console.WriteLine("{0, -7} | {1, -20} | {2, -10} | {3, -20}",
+                        cx.Id, cx.Etiqueta, cx.Cor, cx.DiasDeEmprestimo);
+
                     Console.ResetColor();
+                }
 
-                Console.WriteLine(
-            "{0, 7} | {1, -20} | {2, -10} | {3, -20}",
-            cx.Id, cx.Etiqueta, cx.Cor, cx.DiasDeEmprestimo
-                );
+            if (deveExibirCabecalho) ExibirMensagem("");
+        }
+
+        private Caixa ObterDadosCadastrais()
+        {
+            Console.Write("Etiqueta: ");
+            string etiqueta = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(etiqueta))
+            {
+                Console.WriteLine("Etiqueta inválida.");
+                return null;
             }
 
-        Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("1 = Vermelho");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("2 = Verde");
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("3 = Azul");
+            Console.ResetColor();
+            Console.WriteLine("4 = Branco");
 
-        if (deveExibirCabecalho)
-        {
-            ExibirMensagem("");
+            string? codigoCor = Console.ReadLine();
+            string cor = codigoCor switch
+            {
+                "1" => "Vermelho",
+                "2" => "Verde",
+                "3" => "Azul",
+                _   => "Branco"
+            };
+
+            Console.Write("Dias de empréstimo: ");
+            int.TryParse(Console.ReadLine(), out int dias);
+            if (dias <= 0) dias = 7;
+
+            return new Caixa(etiqueta, cor, dias);
         }
     }
-    private Caixa ObterDadosCadastrais()
-    {
-        ExibirCabecalho("Digite a etiqueta da caixa: ");
-        string etiqueta = Console.ReadLine();
-        if (string.IsNullOrWhiteSpace(etiqueta) || etiqueta.Length > 50)
-        {
-            Console.WriteLine("Etiqueta da caixa inválido, digite um nome válido de até 50 caracteres.");
-            return null;
-        }
-
-        Console.WriteLine("\nSelecione uma das cores");
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine("1 = Vermelho");
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("2 = Verde");
-        Console.ForegroundColor = ConsoleColor.Blue;
-        Console.WriteLine("3 = Azul");
-        Console.ResetColor();
-        Console.WriteLine("4 = Branco\n");
-
-        string? codigoCor = Console.ReadLine();
-        string cor;
-
-        if (codigoCor == "1")
-            cor = "Vermelho";
-        else if (codigoCor == "2")
-            cor = "Verde";
-        else if (codigoCor == "3")
-            cor = "Azul";
-        else
-            cor = "Branco";
-
-        Console.WriteLine("informe o tempo de empréstimo das revistas desta caixa: ");
-        string quantidadeDiasDeEmprestimo = Console.ReadLine();
-
-        int diasDeEmprestimo;
-
-        if (string.IsNullOrWhiteSpace(quantidadeDiasDeEmprestimo))
-        {
-            diasDeEmprestimo = 7;
-        }
-        else if (!int.TryParse(quantidadeDiasDeEmprestimo, out diasDeEmprestimo))
-        {
-            Console.WriteLine("\nValor inválido, portanto valor padrão de 7 dias atribuído.\n");
-            diasDeEmprestimo = 7;
-        }
-
-        Caixa novaCaixa = new Caixa(etiqueta, cor, diasDeEmprestimo);
-
-        return novaCaixa;
-    }
-
-    private static void ExibirCabecalho(string titulo)
-    {
-        Console.Clear();
-        Console.WriteLine("\nGestão de Caixas\n");
-        Console.WriteLine(titulo, "\n");
-    }
-
-    public static void ExibirMensagem(string mensagem)
-    {
-        Console.WriteLine(mensagem);
-        Console.WriteLine("Pressione ENTER para continuar...");
-        Console.ReadKey();
-    }
-}
