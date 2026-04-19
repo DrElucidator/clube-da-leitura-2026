@@ -3,16 +3,10 @@ using ClubeDaLeitura.ConsoleApp.Dominio;
 using ClubeDaLeitura.ConsoleApp.Infraestrutura;
 
 RepositorioCaixa repositorioCaixa = new RepositorioCaixa();
+RepositorioRevista repositorioRevista = new RepositorioRevista(repositorioCaixa);
+
 TelaCaixa telaCaixa = new TelaCaixa(repositorioCaixa);
-
-RepositorioRevista repositorioRevista = new RepositorioRevista();
 TelaRevista telaRevista = new TelaRevista(repositorioRevista, repositorioCaixa);
-
-Caixa caixa = new Caixa("Lançamentos", "Vermelho", 3);
-repositorioCaixa.Cadastrar(caixa);
-
-Revista revista = new Revista("Action Comics", 155, 1990, caixa);
-repositorioRevista.Cadastrar(revista);
 
 while (true)
 {
@@ -55,7 +49,7 @@ while (true)
             else if (opcaoMenuInterno == "3")
                 telaCaixa.Excluir();
             else if (opcaoMenuInterno == "4")
-                telaCaixa.VisualizarTodas(deveExibirCabecalho: true);
+                telaCaixa.VisualizarTodas(true);
             else
                 continue;
         }
@@ -76,7 +70,7 @@ while (true)
             else if (opcaoMenuInterno == "3")
                 telaRevista.Excluir();
             else if (opcaoMenuInterno == "4")
-                telaRevista.VisualizarTodas(deveExibirCabecalho: true);
+                telaRevista.VisualizarTodas(true);
             else
                 continue;
         }
