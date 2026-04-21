@@ -4,9 +4,11 @@ using ClubeDaLeitura.ConsoleApp.Infraestrutura;
 
 RepositorioCaixa repositorioCaixa = new RepositorioCaixa();
 RepositorioRevista repositorioRevista = new RepositorioRevista(repositorioCaixa);
+RepositorioAmigo repositorioAmigo = new RepositorioAmigo(repositorioRevista);
 
 TelaCaixa telaCaixa = new TelaCaixa(repositorioCaixa);
 TelaRevista telaRevista = new TelaRevista(repositorioRevista, repositorioCaixa);
+TelaAmigo telaAmigo = new TelaAmigo(repositorioAmigo);
 
 while (true)
 {
@@ -23,11 +25,7 @@ while (true)
     Console.Write("> ");
     string? opcaoMenuPrincipal = Console.ReadLine()?.ToUpper();
 
-    if (opcaoMenuPrincipal == "S")
-    {
-        Console.Clear();
-        break;
-    }
+    if (opcaoMenuPrincipal == "S") break;
 
     while (true)
     {
@@ -36,53 +34,36 @@ while (true)
         if (opcaoMenuPrincipal == "1")
         {
             opcaoMenuInterno = telaCaixa.ObterOpcaoMenu();
-
-            if (opcaoMenuInterno == "S")
-            {
-                Console.Clear();
-                break;
-            }
-            if (opcaoMenuInterno == "1")
-                telaCaixa.Cadastrar();
-            else if (opcaoMenuInterno == "2")
-                telaCaixa.Editar();
-            else if (opcaoMenuInterno == "3")
-                telaCaixa.Excluir();
-            else if (opcaoMenuInterno == "4")
-                telaCaixa.VisualizarTodas(true);
-            else
-                continue;
+            if (opcaoMenuInterno == "S") break;
+            if (opcaoMenuInterno == "1") telaCaixa.Cadastrar();
+            else if (opcaoMenuInterno == "2") telaCaixa.Editar();
+            else if (opcaoMenuInterno == "3") telaCaixa.Excluir();
+            else if (opcaoMenuInterno == "4") telaCaixa.VisualizarTodas(true);
         }
-
         else if (opcaoMenuPrincipal == "2")
         {
             opcaoMenuInterno = telaRevista.ObterOpcaoMenu();
-
-            if (opcaoMenuInterno == "S")
-            {
-                Console.Clear();
-                break;
-            }
-            if (opcaoMenuInterno == "1")
-                telaRevista.Cadastrar();
-            else if (opcaoMenuInterno == "2")
-                telaRevista.Editar();
-            else if (opcaoMenuInterno == "3")
-                telaRevista.Excluir();
-            else if (opcaoMenuInterno == "4")
-                telaRevista.VisualizarTodas(true);
-            else
-                continue;
+            if (opcaoMenuInterno == "S") break;
+            if (opcaoMenuInterno == "1") telaRevista.Cadastrar();
+            else if (opcaoMenuInterno == "2") telaRevista.Editar();
+            else if (opcaoMenuInterno == "3") telaRevista.Excluir();
+            else if (opcaoMenuInterno == "4") telaRevista.VisualizarTodas(true);
         }
-
         else if (opcaoMenuPrincipal == "3")
         {
-
+            opcaoMenuInterno = telaAmigo.ObterOpcaoMenu();
+            if (opcaoMenuInterno == "S") break;
+            if (opcaoMenuInterno == "1") telaAmigo.Cadastrar();
+            else if (opcaoMenuInterno == "2") telaAmigo.Editar();
+            else if (opcaoMenuInterno == "3") telaAmigo.Excluir();
+            else if (opcaoMenuInterno == "4") telaAmigo.VisualizarTodas(true);
         }
-
         else if (opcaoMenuPrincipal == "4")
         {
-
+            Console.Clear();
+            Console.WriteLine("Gestão de Empréstimos");
+            Console.ReadKey();
+            break;
         }
     }
 }

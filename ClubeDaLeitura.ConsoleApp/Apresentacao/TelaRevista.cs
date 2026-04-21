@@ -18,8 +18,10 @@ public class TelaRevista : TelaBase<Revista>
     {
         ExibirCabecalho("Cadastro de Revista", NomeGestao);
         Revista novaRevista = ObterDadosCadastrais();
-        if (novaRevista == null)
-            ExibirMensagem("Cadastro cancelado.");
+        var erros = novaRevista.Validar();
+
+        if (erros.Length > 0)
+            ExibirErros(erros);
         else
         {
             repositorioRevista.Cadastrar(novaRevista);
@@ -34,26 +36,41 @@ public class TelaRevista : TelaBase<Revista>
 
         Console.WriteLine("\nDigite o id da revista para edição: ");
         string? id = Console.ReadLine()?.ToUpper();
-        Revista? revistaEditada = repositorioRevista.BuscarPorId(id);
+        var revistaExistente = repositorioRevista.BuscarPorId(id);
 
-        if (revistaEditada == null)
+        if (revistaExistente == null)
+        {
             ExibirMensagem("Revista não encontrada.");
+            return;
+        }
+
+        Console.Write("Novo título: ");
+        string? novoTitulo = Console.ReadLine();
+        string tituloFinal = string.IsNullOrWhiteSpace(novoTitulo) ? revistaExistente.Titulo : novoTitulo;
+
+        Console.Write("Novo número de edição: ");
+        string? edicaoStr = Console.ReadLine();
+        int edicaoFinal = string.IsNullOrWhiteSpace(edicaoStr) ? revistaExistente.NumeroEdicao :
+                          (int.TryParse(edicaoStr, out int edicao) ? edicao : revistaExistente.NumeroEdicao);
+
+        Console.Write("Novo ano de publicação: ");
+        string? anoStr = Console.ReadLine();
+        int anoFinal = string.IsNullOrWhiteSpace(anoStr) ? revistaExistente.AnoPublicacao :
+                       (int.TryParse(anoStr, out int ano) ? ano : revistaExistente.AnoPublicacao);
+
+        Console.WriteLine("Digite o ID da nova caixa (ENTER para manter atual): ");
+        string? idCaixa = Console.ReadLine()?.ToUpper();
+        string caixaFinal = string.IsNullOrWhiteSpace(idCaixa) ? revistaExistente.IdCaixa : idCaixa;
+
+        Revista revistaAtualizada = new Revista(tituloFinal, edicaoFinal, anoFinal, caixaFinal);
+
+        var erros = revistaAtualizada.Validar();
+        if (erros.Length > 0)
+            ExibirErros(erros);
         else
         {
-            Console.Write("Novo título: ");
-            string? novoTitulo = Console.ReadLine();
-            if (!string.IsNullOrWhiteSpace(novoTitulo))
-                revistaEditada.Titulo = novoTitulo;
-
-            Console.Write("Novo número de edição: ");
-            if (int.TryParse(Console.ReadLine(), out int novaEdicao))
-                revistaEditada.NumeroEdicao = novaEdicao;
-
-            Console.Write("Novo ano de publicação: ");
-            if (int.TryParse(Console.ReadLine(), out int novoAno))
-                revistaEditada.AnoPublicacao = novoAno;
-
-            ExibirMensagem($"Revista \"{revistaEditada.Id}\" editada com sucesso.");
+            repositorioRevista.Editar(id, revistaAtualizada);
+            ExibirMensagem($"Revista \"{id}\" editada com sucesso.");
         }
     }
 
@@ -64,7 +81,7 @@ public class TelaRevista : TelaBase<Revista>
 
         Console.WriteLine("\nDigite o id da revista para exclusão: ");
         string? id = Console.ReadLine()?.ToUpper();
-        Revista? revistaDeletada = repositorioRevista.BuscarPorId(id);
+        var revistaDeletada = repositorioRevista.BuscarPorId(id);
 
         if (revistaDeletada == null)
             ExibirMensagem("Revista não encontrada.");
@@ -88,7 +105,7 @@ public class TelaRevista : TelaBase<Revista>
         else
             foreach (var r in revistas)
             {
-                Caixa? caixa = repositorioCaixa.BuscarPorId(r.IdCaixa);
+                var caixa = repositorioCaixa.BuscarPorId(r.IdCaixa);
                 string etiquetaCaixa = caixa != null ? caixa.Etiqueta : "Caixa não encontrada";
 
                 if (caixa?.Cor == "Vermelho") Console.ForegroundColor = ConsoleColor.Red;
@@ -108,12 +125,7 @@ public class TelaRevista : TelaBase<Revista>
     private Revista ObterDadosCadastrais()
     {
         Console.Write("Título: ");
-        string titulo = Console.ReadLine();
-        if (string.IsNullOrWhiteSpace(titulo))
-        {
-            Console.WriteLine("Título inválido.");
-            return null;
-        }
+        string titulo = Console.ReadLine() ?? "";
 
         Console.Write("Número da edição: ");
         int.TryParse(Console.ReadLine(), out int numeroEdicao);
@@ -123,7 +135,7 @@ public class TelaRevista : TelaBase<Revista>
 
         string idCaixa = SelecionarCaixa();
         if (string.IsNullOrEmpty(idCaixa))
-            return null;
+            return new Revista(titulo, numeroEdicao, anoPublicacao, "");
 
         return new Revista(titulo, numeroEdicao, anoPublicacao, idCaixa);
     }
@@ -167,6 +179,6 @@ public class TelaRevista : TelaBase<Revista>
             Console.WriteLine("ID inválido, tente novamente.");
         } while (true);
 
-        return idSelecionado;
+        return idSelecionado!;
     }
 }
