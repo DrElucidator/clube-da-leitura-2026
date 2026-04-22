@@ -7,7 +7,7 @@ public class Revista : EntidadeBase
     public int AnoPublicacao { get; set; }
     public string IdCaixa { get; set; } = string.Empty;
     public string? IdAmigoEmprestado { get; set; }
-
+    public bool Disponivel { get; set; } = true;
     public Revista(string titulo, int numeroEdicao, int anoPublicacao, string idCaixa)
     {
         Titulo = titulo;
@@ -25,6 +25,7 @@ public class Revista : EntidadeBase
         NumeroEdicao = revistaAtualizada.NumeroEdicao;
         AnoPublicacao = revistaAtualizada.AnoPublicacao;
         IdCaixa = revistaAtualizada.IdCaixa;
+        Disponivel = revistaAtualizada.Disponivel;
         IdAmigoEmprestado = revistaAtualizada.IdAmigoEmprestado;
     }
 

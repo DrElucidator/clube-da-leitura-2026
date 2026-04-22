@@ -23,6 +23,17 @@ public class RepositorioRevista : RepositorioBase<Revista>
         }
     }
 
+    public void Atualizar(Revista revista)
+    {
+        var existente = BuscarPorId(revista.Id);
+        if (existente != null)
+        {
+            existente.AtualizarRegistro(revista);
+            SalvarNoArquivo();
+            SincronizarCaixas();
+        }
+    }
+
     public new void Cadastrar(Revista revista)
     {
         var caixa = repositorioCaixa.BuscarPorId(revista.IdCaixa);
