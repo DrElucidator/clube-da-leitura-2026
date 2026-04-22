@@ -1,41 +1,75 @@
-using System.Security.Cryptography;
-
-namespace ClubeDaLeitura.ConsoleApp.Dominio;
-
-public enum StatusEmprestimo
+namespace ClubeDaLeitura.ConsoleApp.Dominio
 {
-    Indefinido,
-    Aberto,
-    Retornado
-}
-public class Emprestimo
-{
-    public string Id { get; set; } = string.Empty;
-    public Revista Revista { get; set; }
-    public Amigo Amigo { get; set; }
-    public DateTime Abertura { get; set; }
-    public DateTime PrazoRetorno { get; set; }
-    public StatusEmprestimo Status { get; set; } = StatusEmprestimo.Indefinido;
-    public Emprestimo(Revista revista, Amigo amigo)
+    public enum StatusEmprestimo
     {
-        Id = Convert
-            .ToHexString(RandomNumberGenerator.GetBytes(20))
-            .ToUpper()
-            .Substring(0, 5);
-
-        Revista = revista;
-        Amigo = amigo;
+        Indefinido,
+        Aberto,
+        Atrasado,
+        Retornado
     }
-    public string[] Validar()
+
+    public class Emprestimo : EntidadeBase
     {
-        string erros = string.Empty;
+        public Revista Revista { get; set; }
+        public Amigo Amigo { get; set; }
+        public DateTime Abertura { get; set; }
+        public StatusEmprestimo Status { get; set; } = StatusEmprestimo.Indefinido;
 
-        if (Revista == null)
-            erros += "O campo \"Revista\" deve ser preenchido;";
+        public Emprestimo(Revista revista, Amigo amigo)
+        {
+            Revista = revista;
+            Amigo = amigo;
+            Abertura = DateTime.Now;
+            Status = StatusEmprestimo.Aberto;
+        }
 
-        if (Amigo == null)
-            erros += "O campo \"Amigo\" deve ser preenchido;";
+        public DateTime CalcularPrazoRetorno(Caixa caixa)
+        {
+            if (caixa == null)
+                return DateTime.MinValue;
 
-        return erros.Split(';', StringSplitOptions.RemoveEmptyEntries);
+            return Abertura.AddDays(caixa.DiasDeEmprestimo);
+        }
+
+        public int DiasDecorridos()
+        {
+            return (DateTime.Now - Abertura).Days;
+        }
+
+        public void AtualizarStatus(Caixa caixa)
+        {
+            if (Status == StatusEmprestimo.Retornado)
+                return;
+
+            DateTime prazo = CalcularPrazoRetorno(caixa);
+
+            if (DateTime.Now > prazo)
+                Status = StatusEmprestimo.Atrasado;
+            else
+                Status = StatusEmprestimo.Aberto;
+        }
+
+        public override string[] Validar()
+        {
+            string erros = string.Empty;
+
+            if (Revista == null)
+                erros += "O campo \"Revista\" deve ser preenchido;";
+
+            if (Amigo == null)
+                erros += "O campo \"Amigo\" deve ser preenchido;";
+
+            return erros.Split(';', StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        public override void AtualizarRegistro(EntidadeBase novoRegistro)
+        {
+            Emprestimo atualizado = (Emprestimo)novoRegistro;
+
+            Revista = atualizado.Revista;
+            Amigo = atualizado.Amigo;
+            Abertura = atualizado.Abertura;
+            Status = atualizado.Status;
+        }
     }
 }
