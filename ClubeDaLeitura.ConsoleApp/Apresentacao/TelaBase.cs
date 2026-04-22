@@ -21,6 +21,22 @@ public abstract class TelaBase<T> where T : EntidadeBase
         return Console.ReadLine()?.ToUpper();
     }
 
+        public virtual string? ObterOpcaoMenuEmprestimos()
+    {
+        Console.Clear();
+        Console.WriteLine("---------------------------------");
+        Console.WriteLine($"Gestão de {NomeGestao}");
+        Console.WriteLine("---------------------------------");
+        Console.WriteLine("1 - Novo Empréstimo");
+        Console.WriteLine("2 - Editar Ativos");
+        Console.WriteLine("3 - Atualizar Extorno");
+        Console.WriteLine("4 - Visualizar Todos");
+        Console.WriteLine("S - Voltar");
+        Console.WriteLine("---------------------------------");
+        Console.Write("> ");
+        return Console.ReadLine()?.ToUpper();
+    }
+
     protected static void ExibirCabecalho(string titulo, string nomeGestao)
     {
         Console.Clear();

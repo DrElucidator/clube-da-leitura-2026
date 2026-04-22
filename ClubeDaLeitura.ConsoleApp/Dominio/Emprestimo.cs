@@ -1,5 +1,4 @@
-namespace ClubeDaLeitura.ConsoleApp.Dominio
-{
+namespace ClubeDaLeitura.ConsoleApp.Dominio;
     public enum StatusEmprestimo
     {
         Indefinido,
@@ -72,4 +71,3 @@ namespace ClubeDaLeitura.ConsoleApp.Dominio
             Status = atualizado.Status;
         }
     }
-}

@@ -1,8 +1,7 @@
 using ClubeDaLeitura.ConsoleApp.Dominio;
 using ClubeDaLeitura.ConsoleApp.Infraestrutura;
+namespace ClubeDaLeitura.ConsoleApp.Apresentacao;
 
-namespace ClubeDaLeitura.ConsoleApp.Apresentacao
-{
     public class TelaEmprestimo : TelaBase<Emprestimo>
     {
         public override string NomeGestao => "Empréstimos";
@@ -131,7 +130,7 @@ namespace ClubeDaLeitura.ConsoleApp.Apresentacao
         private Emprestimo ObterDadosCadastrais()
         {
             Console.WriteLine("Selecione o amigo:");
-            var amigos = repositorioAmigo.SelecionarTodos();
+            var amigos = repositorioAmigo.SelecionarTodas();
             foreach (var a in amigos)
                 Console.WriteLine($"{a.Id} - {a.Nome}");
 
@@ -167,4 +166,3 @@ namespace ClubeDaLeitura.ConsoleApp.Apresentacao
             Console.ReadKey();
         }
     }
-}

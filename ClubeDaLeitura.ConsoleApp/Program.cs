@@ -5,10 +5,12 @@ using ClubeDaLeitura.ConsoleApp.Infraestrutura;
 RepositorioCaixa repositorioCaixa = new RepositorioCaixa();
 RepositorioRevista repositorioRevista = new RepositorioRevista(repositorioCaixa);
 RepositorioAmigo repositorioAmigo = new RepositorioAmigo(repositorioRevista);
+RepositorioEmprestimo repositorioEmprestimo = new RepositorioEmprestimo();
 
 TelaCaixa telaCaixa = new TelaCaixa(repositorioCaixa);
 TelaRevista telaRevista = new TelaRevista(repositorioRevista, repositorioCaixa);
 TelaAmigo telaAmigo = new TelaAmigo(repositorioAmigo);
+TelaEmprestimo telaEmprestimo = new TelaEmprestimo(repositorioEmprestimo, repositorioRevista, repositorioAmigo, repositorioCaixa);
 
 while (true)
 {
@@ -60,10 +62,12 @@ while (true)
         }
         else if (opcaoMenuPrincipal == "4")
         {
-            Console.Clear();
-            Console.WriteLine("Gestão de Empréstimos");
-            Console.ReadKey();
-            break;
+            opcaoMenuInterno = telaEmprestimo.ObterOpcaoMenuEmprestimos();
+            if (opcaoMenuInterno == "S") break;
+            if (opcaoMenuInterno == "1") telaEmprestimo.Cadastrar();
+            else if (opcaoMenuInterno == "2") telaEmprestimo.Editar();
+            else if (opcaoMenuInterno == "3") telaEmprestimo.Excluir();
+            else if (opcaoMenuInterno == "4") telaEmprestimo.VisualizarTodas(true);
         }
     }
 }
