@@ -2,7 +2,7 @@ using ClubeDaLeitura.ConsoleApp.Dominio;
 using ClubeDaLeitura.ConsoleApp.Infraestrutura;
 namespace ClubeDaLeitura.ConsoleApp.Apresentacao;
 
-public class TelaAmigo : TelaBase<Amigo>
+public class TelaAmigo : TelaBase
 {
     private readonly RepositorioAmigo repositorioAmigo;
     public override string NomeGestao => "Amigos";

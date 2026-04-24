@@ -2,7 +2,7 @@ using ClubeDaLeitura.ConsoleApp.Dominio;
 using ClubeDaLeitura.ConsoleApp.Infraestrutura;
 namespace ClubeDaLeitura.ConsoleApp.Apresentacao;
 
-public class TelaRevista : TelaBase<Revista>
+public class TelaRevista : TelaBase
 {
     public override string NomeGestao => "Revistas";
     private readonly RepositorioRevista repositorioRevista;
@@ -96,28 +96,40 @@ public class TelaRevista : TelaBase<Revista>
         if (deveExibirCabecalho)
             ExibirCabecalho("Visualização de Revistas", NomeGestao);
 
-        Console.WriteLine("{0, -7} | {1, -25} | {2, -6} | {3, -4} | {4, -15}",
-            "Id", "Título", "Edição", "Ano", "Caixa");
+        Console.WriteLine("{0,-7} | {1,-25} | {2,-10} | {3,-10} | {4,-10} | {5,-12}",
+            "Id", "Título", "Edição", "Ano", "Caixa", "Disponível");
 
         var revistas = repositorioRevista.SelecionarTodas();
         if (revistas.Count == 0)
+        {
             Console.WriteLine("Nenhuma revista cadastrada.");
-        else
-            foreach (var r in revistas)
+            return;
+        }
+
+        foreach (var revst in revistas)
+        {
+            string disponivel = revst.Disponivel ? "Sim" : "Não";
+
+            var caixa = repositorioCaixa.BuscarPorId(revst.IdCaixa);
+
+            var corOriginal = Console.ForegroundColor;
+
+            if (caixa != null)
             {
-                var caixa = repositorioCaixa.BuscarPorId(r.IdCaixa);
-                string etiquetaCaixa = caixa != null ? caixa.Etiqueta : "Caixa não encontrada";
-
-                if (caixa?.Cor == "Vermelho") Console.ForegroundColor = ConsoleColor.Red;
-                else if (caixa?.Cor == "Verde") Console.ForegroundColor = ConsoleColor.Green;
-                else if (caixa?.Cor == "Azul") Console.ForegroundColor = ConsoleColor.Blue;
-                else Console.ResetColor();
-
-                Console.WriteLine("{0, -7} | {1, -25} | {2, -6} | {3, -4} | {4, -15}",
-                    r.Id, r.Titulo, r.NumeroEdicao, r.AnoPublicacao, etiquetaCaixa);
-
-                Console.ResetColor();
+                if (caixa.Cor.Equals("Azul", StringComparison.OrdinalIgnoreCase))
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                else if (caixa.Cor.Equals("Vermelho", StringComparison.OrdinalIgnoreCase))
+                    Console.ForegroundColor = ConsoleColor.Red;
+                else if (caixa.Cor.Equals("Verde", StringComparison.OrdinalIgnoreCase))
+                    Console.ForegroundColor = ConsoleColor.Green;
             }
+
+            Console.WriteLine("{0,-7} | {1,-25} | {2,-10} | {3,-10} | {4,-10} | {5,-12}",
+                revst.Id, revst.Titulo, revst.NumeroEdicao, revst.AnoPublicacao,
+                caixa?.Etiqueta ?? "N/A", disponivel);
+
+            Console.ForegroundColor = corOriginal;
+        }
 
         if (deveExibirCabecalho) ExibirMensagem("");
     }

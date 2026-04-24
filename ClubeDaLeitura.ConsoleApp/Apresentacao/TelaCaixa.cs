@@ -3,7 +3,7 @@ using ClubeDaLeitura.ConsoleApp.Infraestrutura;
 
 namespace ClubeDaLeitura.ConsoleApp.Apresentacao;
 
-public class TelaCaixa : TelaBase<Caixa>
+public class TelaCaixa : TelaBase
 {
     public override string NomeGestao => "Caixas";
     private readonly RepositorioCaixa repositorioCaixa;

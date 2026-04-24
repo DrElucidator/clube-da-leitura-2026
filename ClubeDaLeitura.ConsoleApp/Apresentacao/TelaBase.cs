@@ -1,7 +1,8 @@
 using ClubeDaLeitura.ConsoleApp.Dominio;
+
 namespace ClubeDaLeitura.ConsoleApp.Apresentacao;
 
-public abstract class TelaBase<T> where T : EntidadeBase
+public abstract class TelaBase : ITela
 {
     public abstract string NomeGestao { get; }
 
@@ -21,16 +22,16 @@ public abstract class TelaBase<T> where T : EntidadeBase
         return Console.ReadLine()?.ToUpper();
     }
 
-        public virtual string? ObterOpcaoMenuEmprestimos()
+    public virtual string? ObterOpcaoMenuEmprestimos()
     {
         Console.Clear();
         Console.WriteLine("---------------------------------");
         Console.WriteLine($"Gestão de {NomeGestao}");
         Console.WriteLine("---------------------------------");
-        Console.WriteLine("1 - Novo Empréstimo");
-        Console.WriteLine("2 - Editar Ativos");
-        Console.WriteLine("3 - Atualizar Extorno");
-        Console.WriteLine("4 - Visualizar Todos");
+        Console.WriteLine("1 - Registrar novo empréstimo");
+        Console.WriteLine("2 - Editar empréstimo ativo");
+        Console.WriteLine("3 - Retornar empréstimo");
+        Console.WriteLine("4 - Visualizar todos");
         Console.WriteLine("S - Voltar");
         Console.WriteLine("---------------------------------");
         Console.Write("> ");

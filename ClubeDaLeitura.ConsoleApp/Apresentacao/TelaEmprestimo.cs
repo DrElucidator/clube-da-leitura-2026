@@ -2,7 +2,7 @@ using ClubeDaLeitura.ConsoleApp.Dominio;
 using ClubeDaLeitura.ConsoleApp.Infraestrutura;
 namespace ClubeDaLeitura.ConsoleApp.Apresentacao;
 
-public class TelaEmprestimo : TelaBase<Emprestimo>
+public class TelaEmprestimo : TelaBase
 {
     public override string NomeGestao => "Empréstimos";
 
@@ -114,16 +114,27 @@ public class TelaEmprestimo : TelaBase<Emprestimo>
 
     public override void Excluir()
     {
-        ExibirCabecalho("Exclusão de Empréstimo", NomeGestao);
+        ExibirCabecalho("Retorno de Empréstimo", NomeGestao);
         VisualizarTodas(false);
 
         Console.Write("Digite o ID do empréstimo: ");
         string id = Console.ReadLine()?.ToUpper();
+        Emprestimo emprestimoExistente = repositorioEmprestimo.BuscarPorId(id);
 
-        if (repositorioEmprestimo.Excluir(id))
-            ExibirMensagem("Empréstimo excluído.");
-        else
+        if (emprestimoExistente == null)
+        {
             ExibirMensagem("Empréstimo não encontrado.");
+            return;
+        }
+
+        emprestimoExistente.Status = StatusEmprestimo.Retornado;
+        emprestimoExistente.Revista.Disponivel = true;
+        emprestimoExistente.Revista.IdAmigoEmprestado = null;
+
+        repositorioRevista.Atualizar(emprestimoExistente.Revista);
+        repositorioEmprestimo.Atualizar(emprestimoExistente);
+
+        ExibirMensagem("Revista retornada com sucesso.");
     }
 
     public override void VisualizarTodas(bool deveExibirCabecalho)
@@ -202,5 +213,18 @@ public class TelaEmprestimo : TelaBase<Emprestimo>
         Console.ResetColor();
         Console.WriteLine("Pressione ENTER para continuar...");
         Console.ReadKey();
+    }
+    public string? ObterOpcaoMenuEmprestimos()
+    {
+        Console.Clear();
+        Console.WriteLine("Gestão de Empréstimos");
+        Console.WriteLine("1 - Cadastrar");
+        Console.WriteLine("2 - Editar");
+        Console.WriteLine("3 - Excluir");
+        Console.WriteLine("4 - Visualizar");
+        Console.WriteLine("5 - Retornar Empréstimo");
+        Console.WriteLine("S - Voltar");
+        Console.Write("> ");
+        return Console.ReadLine()?.ToUpper();
     }
 }
