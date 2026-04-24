@@ -1,3 +1,4 @@
+using System.IO.Pipelines;
 using ClubeDaLeitura.ConsoleApp.Dominio;
 using ClubeDaLeitura.ConsoleApp.Infraestrutura;
 
@@ -7,10 +8,11 @@ public class TelaCaixa : TelaBase
 {
     public override string NomeGestao => "Caixas";
     private readonly RepositorioCaixa repositorioCaixa;
-
-    public TelaCaixa(RepositorioCaixa rC)
+    private readonly RepositorioRevista repositorioRevista;
+    public TelaCaixa(RepositorioCaixa repositorioCaixa, RepositorioRevista repositorioRevista)
     {
-        repositorioCaixa = rC;
+        this.repositorioCaixa = repositorioCaixa;
+        this.repositorioRevista = repositorioRevista;
     }
 
     public override void Cadastrar()
@@ -97,7 +99,9 @@ public class TelaCaixa : TelaBase
         if (deveExibirCabecalho)
             ExibirCabecalho("Visualização de Caixas", NomeGestao);
 
-        Console.WriteLine("{0, -7} | {1, -20} | {2, -10} | {3, -20}", "Id", "Etiqueta", "Cor", "Dias");
+        Console.WriteLine("{0,-7} | {1,-20} | {2,-10} | {3,-20} | {4,-15}",
+            "Id", "Etiqueta", "Cor", "Dias", "Qtd Revistas");
+
         var caixas = repositorioCaixa.SelecionarTodas();
 
         if (caixas.Count == 0)
@@ -110,8 +114,11 @@ public class TelaCaixa : TelaBase
                 else if (cx.Cor == "Azul") Console.ForegroundColor = ConsoleColor.Blue;
                 else Console.ResetColor();
 
-                Console.WriteLine("{0, -7} | {1, -20} | {2, -10} | {3, -20}",
-                    cx.Id, cx.Etiqueta, cx.Cor, cx.DiasDeEmprestimo);
+                int qtdRevistas = repositorioRevista.SelecionarTodas()
+                    .Count(r => r.IdCaixa == cx.Id);
+
+                Console.WriteLine("{0,-7} | {1,-20} | {2,-10} | {3,-20} | {4,-15}",
+                    cx.Id, cx.Etiqueta, cx.Cor, cx.DiasDeEmprestimo, qtdRevistas);
 
                 Console.ResetColor();
             }

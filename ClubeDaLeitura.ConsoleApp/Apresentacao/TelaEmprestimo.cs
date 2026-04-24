@@ -12,15 +12,15 @@ public class TelaEmprestimo : TelaBase
     private readonly RepositorioCaixa repositorioCaixa;
 
     public TelaEmprestimo(
-        RepositorioEmprestimo rE,
-        RepositorioRevista rR,
-        RepositorioAmigo rA,
-        RepositorioCaixa rC)
+        RepositorioEmprestimo repositorioEmprestimo,
+        RepositorioRevista repositorioRevista,
+        RepositorioAmigo repositorioAmigo,
+        RepositorioCaixa repositorioCaixa)
     {
-        repositorioEmprestimo = rE;
-        repositorioRevista = rR;
-        repositorioAmigo = rA;
-        repositorioCaixa = rC;
+        this.repositorioEmprestimo = repositorioEmprestimo;
+        this.repositorioRevista = repositorioRevista;
+        this.repositorioAmigo = repositorioAmigo;
+        this.repositorioCaixa = repositorioCaixa;
     }
 
     public override void Cadastrar()
@@ -127,7 +127,14 @@ public class TelaEmprestimo : TelaBase
             return;
         }
 
+        if (emprestimoExistente.Status == StatusEmprestimo.Retornado)
+        {
+            ExibirMensagem("Este empréstimo já foi finalizado portando não pode ser editado.");
+            return;
+        }
+
         emprestimoExistente.Status = StatusEmprestimo.Retornado;
+        emprestimoExistente.DataDevolucao = DateTime.Now;
         emprestimoExistente.Revista.Disponivel = true;
         emprestimoExistente.Revista.IdAmigoEmprestado = null;
 
@@ -146,6 +153,18 @@ public class TelaEmprestimo : TelaBase
             "Id", "Revista", "Amigo", "Abertura", "Dias", "Status", "Disponível", "AmigoId");
 
         var emprestimos = repositorioEmprestimo.SelecionarTodos();
+
+        foreach (var e in emprestimos.ToList())
+        {
+            if (e.Status == StatusEmprestimo.Retornado &&
+                e.DataDevolucao.HasValue &&
+                (DateTime.Now - e.DataDevolucao.Value).TotalDays > 1)
+            {
+                repositorioEmprestimo.Excluir(e.Id);
+                emprestimos.Remove(e);
+            }
+        }
+
         if (emprestimos.Count == 0)
         {
             Console.WriteLine("Nenhum empréstimo cadastrado.");
@@ -213,18 +232,5 @@ public class TelaEmprestimo : TelaBase
         Console.ResetColor();
         Console.WriteLine("Pressione ENTER para continuar...");
         Console.ReadKey();
-    }
-    public string? ObterOpcaoMenuEmprestimos()
-    {
-        Console.Clear();
-        Console.WriteLine("Gestão de Empréstimos");
-        Console.WriteLine("1 - Cadastrar");
-        Console.WriteLine("2 - Editar");
-        Console.WriteLine("3 - Excluir");
-        Console.WriteLine("4 - Visualizar");
-        Console.WriteLine("5 - Retornar Empréstimo");
-        Console.WriteLine("S - Voltar");
-        Console.Write("> ");
-        return Console.ReadLine()?.ToUpper();
     }
 }

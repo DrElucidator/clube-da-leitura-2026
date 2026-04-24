@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using ClubeDaLeitura.ConsoleApp.Dominio;
 using ClubeDaLeitura.ConsoleApp.Infraestrutura;
 
@@ -39,13 +40,13 @@ public class TelaPrincipal
         string? opcaoMenuPrincipal = Console.ReadLine()?.ToUpper();
 
         if (opcaoMenuPrincipal == "1")
-            return new TelaCaixa(repositorioCaixa);
+            return new TelaCaixa(repositorioCaixa, repositorioRevista);
 
         if (opcaoMenuPrincipal == "2")
             return new TelaRevista(repositorioRevista, repositorioCaixa);
 
         if (opcaoMenuPrincipal == "3")
-            return new TelaAmigo(repositorioAmigo);
+            return new TelaAmigo(repositorioAmigo, repositorioRevista);
 
         if (opcaoMenuPrincipal == "4")
             return new TelaEmprestimo(repositorioEmprestimo, repositorioRevista, repositorioAmigo, repositorioCaixa);

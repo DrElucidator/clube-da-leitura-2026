@@ -8,10 +8,10 @@ public class TelaRevista : TelaBase
     private readonly RepositorioRevista repositorioRevista;
     private readonly RepositorioCaixa repositorioCaixa;
 
-    public TelaRevista(RepositorioRevista rR, RepositorioCaixa rC)
+    public TelaRevista(RepositorioRevista repositorioRevista, RepositorioCaixa repositorioCaixa)
     {
-        repositorioRevista = rR;
-        repositorioCaixa = rC;
+        this.repositorioRevista = repositorioRevista;
+        this.repositorioCaixa = repositorioCaixa;
     }
 
     public override void Cadastrar()

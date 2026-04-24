@@ -4,12 +4,14 @@ namespace ClubeDaLeitura.ConsoleApp.Apresentacao;
 
 public class TelaAmigo : TelaBase
 {
-    private readonly RepositorioAmigo repositorioAmigo;
     public override string NomeGestao => "Amigos";
+    private readonly RepositorioAmigo repositorioAmigo;
+    private readonly RepositorioRevista repositorioRevista;
 
-    public TelaAmigo(RepositorioAmigo repositorioAmigo)
+    public TelaAmigo(RepositorioAmigo repositorioAmigo, RepositorioRevista repositorioRevista)
     {
         this.repositorioAmigo = repositorioAmigo;
+        this.repositorioRevista = repositorioRevista;
     }
 
     public override void Cadastrar()
@@ -99,15 +101,21 @@ public class TelaAmigo : TelaBase
         if (deveExibirCabecalho)
             ExibirCabecalho("Visualização de Amigos", NomeGestao);
 
-        Console.WriteLine("{0, -7} | {1, -15} | {2, -15} | {3, -13}", "Id", "Nome", "Responsável", "Telefone");
+        Console.WriteLine("{0,-7} | {1,-15} | {2,-15} | {3,-15} | {4,-20}",
+            "Id", "Nome", "Responsável", "Telefone", "Qtd Revistas Emprestadas");
 
         var amigos = repositorioAmigo.SelecionarTodas();
         if (amigos.Count == 0)
             Console.WriteLine("Nenhum amigo cadastrado.");
         else
             foreach (var amg in amigos)
-                Console.WriteLine("{0, -7} | {1, -15} | {2, -15} | {3, -13}",
-                    amg.Id, amg.Nome, amg.NomeResponsavel, amg.TelefoneFormatado);
+            {
+                int qtdRevistasEmprestadas = repositorioRevista.SelecionarTodas()
+                    .Count(r => r.IdAmigoEmprestado == amg.Id);
+
+                Console.WriteLine("{0,-7} | {1,-15} | {2,-15} | {3,-15} | {4,-20}",
+                    amg.Id, amg.Nome, amg.NomeResponsavel, amg.TelefoneFormatado, qtdRevistasEmprestadas);
+            }
 
         if (deveExibirCabecalho) ExibirMensagem("");
     }
